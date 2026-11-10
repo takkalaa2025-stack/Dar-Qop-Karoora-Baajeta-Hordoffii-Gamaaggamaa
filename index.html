@@ -1,1 +1,265 @@
 
+<!DOCTYPE html>
+<html lang="om">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karoora Hojii Oromiyaa</title>
+<style>
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f4f8;
+  color:#202b3c;
+}
+header {
+  background:#075b43;
+  color:white;
+  padding:25px 15px;
+  text-align:center;
+}
+header h2 {margin:5px}
+nav {
+  background:#064632;
+  padding:13px;
+  text-align:center;
+  color:white;
+}
+.container {
+  max-width:900px;
+  margin:20px auto;
+  padding:15px;
+}
+.card {
+  background:white;
+  padding:20px;
+  margin-bottom:18px;
+  border-radius:12px;
+  box-shadow:0 2px 8px #0001;
+}
+h3 {color:#075b43}
+label {
+  display:block;
+  margin-top:12px;
+  font-weight:bold;
+}
+input,select,textarea {
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  border:1px solid #ccd3dc;
+  border-radius:7px;
+  font-size:16px;
+}
+button {
+  background:#08734f;
+  color:white;
+  padding:12px 17px;
+  border:0;
+  border-radius:7px;
+  margin-top:15px;
+  cursor:pointer;
+}
+.delete {background:#b83232}
+table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+th,td {
+  padding:10px;
+  border:1px solid #ddd;
+  text-align:left;
+}
+th {background:#075b43;color:white}
+.table-wrap {overflow-x:auto}
+footer {
+  text-align:center;
+  padding:20px;
+  background:#064632;
+  color:white;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h2>KOMISHIINII MANNEEN SIRREESSAA OROMIYAA</h2>
+<h3 style="color:white">SIRNA KAROORA HOJII</h3>
+<p>Karoora Waggaa fi Kurmaanaa</p>
+</header>
+
+<nav>
+Bulchiinsa | Karoora Hojii | Hordoffii | Madaallii
+</nav>
+
+<div class="container">
+
+<div class="card">
+<h3>Odeeffannoo Waliigalaa</h3>
+<label>Waggaa Bajataa</label>
+<input id="year" placeholder="Fakkeenya: 2019">
+
+<label>Waajjira</label>
+<input id="office" placeholder="Maqaa waajjiraa">
+
+<label>Kutaa Hojii</label>
+<select id="department">
+<option>Bulchiinsa fi HR</option>
+<option>Bajataa fi Faayinaansii</option>
+<option>Leenjii fi Ijaarsa Dandeettii</option>
+<option>Bulchiinsa Manneen Sirreessaa</option>
+<option>Haaromsa fi Deebisanii Hawaasaatti Makuu</option>
+<option>Hordoffii fi Madaallii</option>
+</select>
+</div>
+
+<div class="card">
+<h3>Karoora Hojii Haaraa Galmeessi</h3>
+
+<label>Ibsa Hojii</label>
+<textarea id="task" placeholder="Hojii raawwatamu barreessi"></textarea>
+
+<label>Kurmaana</label>
+<select id="quarter">
+<option>Kurmaana 1ffaa</option>
+<option>Kurmaana 2ffaa</option>
+<option>Kurmaana 3ffaa</option>
+<option>Kurmaana 4ffaa</option>
+</select>
+
+<label>Kaayyoo Hojii</label>
+<input id="goal" placeholder="Kaayyoo hojii">
+
+<label>Baay'ina Karoora</label>
+<input id="target" type="number" min="0" placeholder="Fakkeenya: 100">
+
+<label>Nama Itti Gaafatamu</label>
+<input id="person" placeholder="Maqaa itti gaafatamaa">
+
+<label>Haala Raawwii</label>
+<select id="status">
+<option>Hin jalqabamne</option>
+<option>Hojjetamaa jira</option>
+<option>Xumurameera</option>
+</select>
+
+<button onclick="addTask()">Karoora Galmeessi</button>
+</div>
+
+<div class="card">
+<h3>Galmee Karoora Hojii</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Hojii</th>
+<th>Kurmaana</th>
+<th>Kaayyoo</th>
+<th>Karoora</th>
+<th>Itti Gaafatamaa</th>
+<th>Haala</th>
+<th>Haqi</th>
+</tr>
+</thead>
+<tbody id="records"></tbody>
+</table>
+</div>
+<button onclick="downloadCSV()">Karoora Buusi (CSV)</button>
+</div>
+
+<div class="card">
+<h3>Hubachiisa</h3>
+<p>Sirni kun karoora hojii waggaa fi kurmaanaa galmeessuu, hordofuu fi gabaasa buusuuf kan qophaa'eedha.</p>
+<p>Odeeffannoon galmaa'u browser bilbila kana keessatti kuufama. Odeeffannoo iccitii hojii mootummaa hin galchin.</p>
+</div>
+
+</div>
+
+<footer>
+<p>Sirna Karoora Hojii fi Hordoffii Raawwii Hojii</p>
+<p>Komishinii Manneen Sirreessaa Oromiyaa</p>
+</footer>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("karoora") || "[]");
+
+function showTasks() {
+ const table = document.getElementById("records");
+ table.innerHTML = "";
+
+ tasks.forEach((t,i) => {
+  table.innerHTML += `
+  <tr>
+  <td>${escapeHTML(t.task)}</td>
+  <td>${escapeHTML(t.quarter)}</td>
+  <td>${escapeHTML(t.goal)}</td>
+  <td>${escapeHTML(t.target)}</td>
+  <td>${escapeHTML(t.person)}</td>
+  <td>${escapeHTML(t.status)}</td>
+  <td><button class="delete" onclick="removeTask(${i})">Haqi</button></td>
+  </tr>`;
+ });
+}
+
+function escapeHTML(value) {
+ return String(value).replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function addTask() {
+ const task = document.getElementById("task").value.trim();
+ if(!task) {
+  alert("Maaloo ibsa hojii guuti.");
+  return;
+ }
+
+ tasks.push({
+  task,
+  quarter:document.getElementById("quarter").value,
+  goal:document.getElementById("goal").value,
+  target:document.getElementById("target").value,
+  person:document.getElementById("person").value,
+  status:document.getElementById("status").value
+ });
+
+ localStorage.setItem("karoora",JSON.stringify(tasks));
+ document.getElementById("task").value="";
+ document.getElementById("goal").value="";
+ document.getElementById("target").value="";
+ document.getElementById("person").value="";
+ showTasks();
+ alert("Karoora hojii galmaa'eera!");
+}
+
+function removeTask(i) {
+ if(confirm("Karoora kana haquu barbaaddaa?")) {
+  tasks.splice(i,1);
+  localStorage.setItem("karoora",JSON.stringify(tasks));
+  showTasks();
+ }
+}
+
+function downloadCSV() {
+ const rows = [
+  ["Hojii","Kurmaana","Kaayyoo","Karoora","Itti Gaafatamaa","Haala"],
+  ...tasks.map(t=>[t.task,t.quarter,t.goal,t.target,t.person,t.status])
+ ];
+ const csv = "\uFEFF" + rows.map(r=>
+  r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")
+ ).join("\n");
+ const link = document.createElement("a");
+ link.href = URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+ link.download="karoora-hojii.csv";
+ link.click();
+ URL.revokeObjectURL(link.href);
+}
+
+showTasks();
+</script>
+</body>
+</html>
+
